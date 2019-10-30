@@ -154,6 +154,7 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
             for edge in sorted(vnr[0].edges()):
                 path = selected_paths.pop(0)
                 AddEdgeMapping(edge_mapping_list, vnr[0].graph['id'], edge, tuple(path))
+
                 print(edge_mapping_list)
                 for edge_index in range(len(path) - 1):
                     SubtractBwResource(sn, (path[edge_index], path[edge_index + 1]), vnr[0], edge)
@@ -184,13 +185,13 @@ asl = [[0, 15, 0, 40, 0, 0, 0, 0, 0],
        [0, 0, 0, 0, 0, 0, 10, 0, 10],
        [0, 0, 0, 0, 10, 0, 0, 10, 0]]
 
-cvn1 = [[10, 11, 8],
+cvn1 = [[10, 10, 10],
         [2, 3, 2],
         [2, 1, 3],
         [1, 2, 3]]
 
-cvl1 = [[0, 30, 20],
-        [30, 0, 0],
+cvl1 = [[0, 20, 20],
+        [20, 0, 0],
         [20, 0, 0]]
 
 cvn2 = [[5, 5],
@@ -198,8 +199,8 @@ cvn2 = [[5, 5],
         [2, 1],
         [4, 5]]
 
-cvl2 = [[0, 35],
-        [35, 0]]
+cvl2 = [[0, 10],
+        [10, 0]]
 
 # For lettering purposes
 alphabet_dict = dict(zip(range(1, len(asl) + 1), string.ascii_uppercase))
@@ -226,11 +227,6 @@ node_mapping_list = []
 edge_mapping_list = []
 request_queue = deque()
 
-print("VNR1")
-print(vnr1)
-print("VNR2")
-print(vnr2)
-
 vnr_list = [vnr1, vnr2]
 GetRevenue(vnr_list)
 
@@ -248,9 +244,6 @@ for vnr in vnr_list:
 
 successful_node_mapping = GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue)
 GetRevenue(successful_node_mapping)
-
-print("successful node mapping")
-print(successful_node_mapping)
 
 UnsplittableLinkMapping(sn, successful_node_mapping, node_mapping_list, edge_mapping_list, request_queue)
 

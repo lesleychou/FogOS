@@ -232,19 +232,8 @@ node_mapping_list = []
 edge_mapping_list = []
 request_queue = deque()
 
-print("VNR1")
-print(vnr1)
-print("VNR2")
-print(vnr2)
-
 vnr_list = [vnr1, vnr2]
 GetRevenue(vnr_list)
-
-print("after get revenue")
-print("VNR1")
-print(vnr1)
-print("VNR2")
-print(vnr2)
 
 print("=== SN INFORMATION ===")
 print("NODE DATA: ", sorted(sn.nodes.data()))
@@ -260,9 +249,6 @@ for vnr in vnr_list:
 
 successful_node_mapping = GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue)
 GetRevenue(successful_node_mapping)
-
-print("successful node mapping")
-print(successful_node_mapping)
 
 UnsplittableLinkMapping(sn, successful_node_mapping, node_mapping_list, edge_mapping_list, request_queue)
 
