@@ -99,7 +99,7 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
 		else:
 			vnr[0].graph['node_mapping_status'] = 1
-			#print("POSSIBLE NODES: ", possible_sn_nodes)
+			print("POSSIBLE NODES: ", possible_sn_nodes)
 			#print("SN NODES: ", sorted(sn.nodes().data()))
 			sorted_vnr_nodes = SortVnrNodes(vnr[0])
 			#print("VNR NODES: ", sorted_vnr_nodes)
@@ -156,7 +156,7 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
 				if to_map == 1:
 					selected_paths.append(path)
 					break
-		print("adding edge")
+
 		if len(selected_paths) < vnr[0].number_of_edges():
 			request_queue.append(vnr[0])
 			continue
@@ -165,7 +165,6 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
 			for edge in sorted(vnr[0].edges()):
 				path = selected_paths.pop(0)
 				AddEdgeMapping(edge_mapping_list, vnr[0].graph['id'], edge, tuple(path))
-				print(edge_mapping_list)
 				for edge_index in range(len(path)-1):
 					SubtractBwResource(sn, (path[edge_index], path[edge_index+1]), vnr[0], edge)
 

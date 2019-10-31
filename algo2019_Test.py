@@ -39,13 +39,22 @@ def GetRevenue(vnr_list):
         vnr_list[vnr_index] = (vnr_list[vnr_index], sum(revenue_components))
 
 
-def GetAvailableNodes(sn, maximum_cpu):
+def GetAvailableNodes(sn, maximum_cpu, vnr_list):
+    match_SN_nodes = []
+    for vnr in vnr_list:
+        for node1 in vnr[0].nodes():
+            for node in sn.nodes():
+                if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
+                    match_SN_nodes.append(node)
     possible_sn_nodes = []
     for node in sn.nodes():
         if sn.nodes[node]['cpu'] >= maximum_cpu:
-            #   if sn.nodes[node]['content'] == vnr_nodes_content:
             possible_sn_nodes.append(node)
-    return possible_sn_nodes
+
+    rest_sn_nodes = list(set(match_SN_nodes) & set(possible_sn_nodes))
+
+    return rest_sn_nodes
+
 
 
 def GetMaxAvailableResources(sn, sn_subset):
@@ -83,23 +92,23 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
     successful_node_mapping = []
     for vnr in vnr_list:
         maximum_cpu = max(vnr[0].nodes(data=True), key=lambda x: x[1]['cpu'])[1]['cpu']
-        possible_sn_nodes = GetAvailableNodes(sn, maximum_cpu)
+        rest_sn_nodes = GetAvailableNodes(sn, maximum_cpu, vnr_list)
 
-        GetMaxAvailableResources(sn, possible_sn_nodes)
-        if vnr[0].number_of_nodes() > len(possible_sn_nodes):
+        GetMaxAvailableResources(sn, rest_sn_nodes)
+        if vnr[0].number_of_nodes() > len(rest_sn_nodes):
             request_queue.append(vnr[0])
             continue
 
         else:
             vnr[0].graph['node_mapping_status'] = 1
-            # print("POSSIBLE NODES: ", possible_sn_nodes)
+            print("POSSIBLE NODES: ", rest_sn_nodes)
             # print("SN NODES: ", sorted(sn.nodes().data()))
             sorted_vnr_nodes = SortVnrNodes(vnr[0])
             # print("VNR NODES: ", sorted_vnr_nodes)
             # print("")
             for node in sorted_vnr_nodes:
                 # print("NODE:", node)
-                selected_sn_node = possible_sn_nodes.pop(0)
+                selected_sn_node = rest_sn_nodes.pop(0)
                 # print("SELECTED NODE:", selected_sn_node)
                 AddNodeMapping(node_mapping_list, vnr[0].graph['id'], node[0], selected_sn_node[0])
                 SubtractCpuResource(sn, selected_sn_node[0], vnr[0], node[0])
@@ -145,7 +154,7 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
                 if to_map == 1:
                     selected_paths.append(path)
                     break
-        print("adding edge")
+
         if len(selected_paths) < vnr[0].number_of_edges():
             request_queue.append(vnr[0])
             continue
@@ -155,7 +164,6 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
                 path = selected_paths.pop(0)
                 AddEdgeMapping(edge_mapping_list, vnr[0].graph['id'], edge, tuple(path))
 
-                print(edge_mapping_list)
                 for edge_index in range(len(path) - 1):
                     SubtractBwResource(sn, (path[edge_index], path[edge_index + 1]), vnr[0], edge)
 
@@ -173,7 +181,7 @@ def Plotting(network):
 
 
 asn = [[70, 40, 60, 100, 80, 40, 60, 60, 60],
-       [[1, 2, 4, 5], [2, 4], [1, 3, 4], [1, 2, 4, 5], [1, 2, 4, 5], [2, 6], [1, 7], [6, 8], [9, 10]]]
+       [[2, 6], [2, 4], [1, 3, 4], [1, 2, 4, 5], [1, 2, 4, 5], [2, 6], [1, 7], [1, 2], [1, 2]]]
 
 asl = [[0, 15, 0, 40, 0, 0, 0, 0, 0],
        [15, 0, 15, 5, 0, 0, 0, 0, 0],
@@ -229,6 +237,16 @@ request_queue = deque()
 
 vnr_list = [vnr1, vnr2]
 GetRevenue(vnr_list)
+
+print("Content ID")
+possible_SN_nodes = []
+for vnr in vnr_list:
+    for node1 in vnr[0].nodes():
+        for node in sn.nodes():
+            if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
+                possible_SN_nodes.append(node)
+        print(possible_SN_nodes)
+
 
 print("=== SN INFORMATION ===")
 print("NODE DATA: ", sorted(sn.nodes.data()))
