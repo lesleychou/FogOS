@@ -46,13 +46,18 @@ def GetAvailableNodes(sn, maximum_cpu, vnr_list):
             for node in sn.nodes():
                 if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
                     match_SN_nodes.append(node)
+    print("match nodes")
+    print(match_SN_nodes)
     possible_sn_nodes = []
     for node in sn.nodes():
         if sn.nodes[node]['cpu'] >= maximum_cpu:
             possible_sn_nodes.append(node)
+    print("possible sn nodes")
+    print(possible_sn_nodes)
 
     rest_sn_nodes = list(set(match_SN_nodes) & set(possible_sn_nodes))
-
+    print("intersection")
+    print(rest_sn_nodes)
     return rest_sn_nodes
 
 
@@ -93,6 +98,7 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
     for vnr in vnr_list:
         maximum_cpu = max(vnr[0].nodes(data=True), key=lambda x: x[1]['cpu'])[1]['cpu']
         rest_sn_nodes = GetAvailableNodes(sn, maximum_cpu, vnr_list)
+        print("POSSIBLE NODES: ", rest_sn_nodes)
 
         GetMaxAvailableResources(sn, rest_sn_nodes)
         if vnr[0].number_of_nodes() > len(rest_sn_nodes):
@@ -101,7 +107,7 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
         else:
             vnr[0].graph['node_mapping_status'] = 1
-            print("POSSIBLE NODES: ", rest_sn_nodes)
+
             # print("SN NODES: ", sorted(sn.nodes().data()))
             sorted_vnr_nodes = SortVnrNodes(vnr[0])
             # print("VNR NODES: ", sorted_vnr_nodes)
@@ -168,7 +174,23 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
                     SubtractBwResource(sn, (path[edge_index], path[edge_index + 1]), vnr[0], edge)
 
 
-def Plotting(network):
+def PlottingSN(network):
+    pos = {'A': (10, 20), 'B': (30, 30), 'C': (40, 30), 'D': (30, 20), 'E': (50, 20), 'F': (20, 10), 'G': (30, 10),
+           'H': (40, 10), 'I': (50, 10)}
+    nx.draw(network, pos)
+    nx.draw_networkx_nodes(network, pos, nodelist=network.nodes(), node_color='b')
+    nx.draw_networkx_edges(network, pos, nodelist=network.edges())
+    network_node_labels = nx.get_node_attributes(network, "cpu")
+    network_node_text = nx.get_node_attributes(network, "content")
+    #for nodei in pos:
+    x, y = pos['I']
+    plt.text(x-2, y-3, s=network_node_text, bbox=dict(facecolor='red', alpha=0.5), horizontalalignment='center')
+    network_edge_labels = nx.get_edge_attributes(network, "bw")
+    nx.draw_networkx_labels(network, pos, labels=network_node_labels)
+    nx.draw_networkx_edge_labels(network, pos, with_labels=True, edge_labels=network_edge_labels)
+
+
+def PlottingVN(network):
     pos = {'A': (10, 20), 'B': (30, 30), 'C': (40, 30), 'D': (30, 20), 'E': (50, 20), 'F': (20, 10), 'G': (30, 10),
            'H': (40, 10), 'I': (50, 10)}
     nx.draw(network, pos)
@@ -181,7 +203,7 @@ def Plotting(network):
 
 
 asn = [[70, 40, 60, 100, 80, 40, 60, 60, 60],
-       [[2, 6], [2, 4], [1, 3, 4], [1, 2, 4, 5], [1, 2, 4, 5], [2, 6], [1, 7], [1, 2], [1, 2]]]
+       [[1, 2, 6], [2, 4], [3, 4], [4, 5], [2], [2, 6], [7], [3, 2], [2]]]
 
 asl = [[0, 15, 0, 40, 0, 0, 0, 0, 0],
        [15, 0, 15, 5, 0, 0, 0, 0, 0],
@@ -198,9 +220,9 @@ cvn1 = [[10, 10, 10],
         [2, 1, 3],
         [1, 2, 3]]
 
-cvl1 = [[0, 20, 20],
-        [20, 0, 0],
-        [20, 0, 0]]
+cvl1 = [[0, 5, 5],
+        [5, 0, 0],
+        [5, 0, 0]]
 
 cvn2 = [[5, 5],
         [3, 2],
@@ -229,7 +251,7 @@ GenerateVN_Nodes(vnr2, cvn2)
 GenerateEdges(vnr2, cvl2)
 
 plt.subplot(121)
-Plotting(sn)
+PlottingSN(sn)
 
 node_mapping_list = []
 edge_mapping_list = []
@@ -275,8 +297,8 @@ print("NODE DATA: ", sorted(sn.nodes.data()))
 print("EDGE DATA: ", sorted(sn.edges.data()))
 
 plt.subplot(122)
-Plotting(sn)
-Plotting(vnr1)
-Plotting(vnr2)
+# PlottingSN(sn)
+PlottingVN(vnr1)
+# PlottingVN(vnr2)
 
 plt.show()
