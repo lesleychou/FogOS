@@ -43,20 +43,25 @@ def GetAvailableNodes(sn, maximum_cpu, vnr_list):
     match_SN_nodes = []
     for vnr in vnr_list:
         for node1 in vnr[0].nodes():
+            temp = []
             for node in sn.nodes():
                 if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
-                    match_SN_nodes.append(node)
-    print("match nodes")
+                    temp.append(node)
+            match_SN_nodes.append(temp)
+    print("### possible ID nodes ###")
     print(match_SN_nodes)
     possible_sn_nodes = []
     for node in sn.nodes():
         if sn.nodes[node]['cpu'] >= maximum_cpu:
             possible_sn_nodes.append(node)
-    print("possible sn nodes")
+    print("### possible CPU nodes ###")
     print(possible_sn_nodes)
 
-    rest_sn_nodes = list(set(match_SN_nodes) & set(possible_sn_nodes))
-    print("intersection")
+    rest_sn_nodes = []
+    for temp_i in match_SN_nodes:
+        sn_nodes_i = list(set(temp_i) & set(possible_sn_nodes))
+        rest_sn_nodes.append(sn_nodes_i)
+    print("### rest intersection ###")
     print(rest_sn_nodes)
     return rest_sn_nodes
 
@@ -259,15 +264,6 @@ request_queue = deque()
 
 vnr_list = [vnr1, vnr2]
 GetRevenue(vnr_list)
-
-print("Content ID")
-possible_SN_nodes = []
-for vnr in vnr_list:
-    for node1 in vnr[0].nodes():
-        for node in sn.nodes():
-            if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
-                possible_SN_nodes.append(node)
-        print(possible_SN_nodes)
 
 
 print("=== SN INFORMATION ===")
