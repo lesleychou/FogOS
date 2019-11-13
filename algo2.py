@@ -92,14 +92,18 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 		maximum_cpu = max(vnr[0].nodes(data=True), key=lambda x: x[1]['cpu'])[1]['cpu']
 		possible_sn_nodes = GetAvailableNodes(sn, maximum_cpu)
 
+		# print("POSSIBLE NODES 1: ", possible_sn_nodes)
 		GetMaxAvailableResources(sn, possible_sn_nodes)
+		print("POSSIBLE NODES 2: ", possible_sn_nodes)
+		# print("## GetMaxAvailiableRes ##")
+		# print(GetMaxAvailableResources(sn, possible_sn_nodes))
 		if vnr[0].number_of_nodes() > len(possible_sn_nodes):
 			request_queue.append(vnr[0])
 			continue
 
 		else:
 			vnr[0].graph['node_mapping_status'] = 1
-			print("POSSIBLE NODES: ", possible_sn_nodes)
+
 			#print("SN NODES: ", sorted(sn.nodes().data()))
 			sorted_vnr_nodes = SortVnrNodes(vnr[0])
 			#print("VNR NODES: ", sorted_vnr_nodes)

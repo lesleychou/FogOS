@@ -48,26 +48,28 @@ def GetAvailableNodes(sn, maximum_cpu, vnr_list):
                 if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
                     temp.append(node)
             match_SN_nodes.append(temp)
-    print("### possible ID nodes ###")
-    print(match_SN_nodes)
+    #print("### possible ID nodes ###")
+    #print(match_SN_nodes)
     possible_sn_nodes = []
     for node in sn.nodes():
         if sn.nodes[node]['cpu'] >= maximum_cpu:
             possible_sn_nodes.append(node)
-    print("### possible CPU nodes ###")
-    print(possible_sn_nodes)
+    #print("### possible CPU nodes ###")
+    #print(possible_sn_nodes)
 
     rest_sn_nodes = []
     for temp_i in match_SN_nodes:
         sn_nodes_i = list(set(temp_i) & set(possible_sn_nodes))
+        # you're just appending this blindly, but you want it in a different array
         rest_sn_nodes.append(sn_nodes_i)
-    print("### rest intersection ###")
-    print(rest_sn_nodes)
+    #print("### rest intersection ###")
+    #print(rest_sn_nodes)
     return rest_sn_nodes
 
 
 
 def GetMaxAvailableResources(sn, sn_subset):
+    # eg: sn_subset = [[1,2], [3,4]]
     for node_index in range(len(sn_subset)):
         max_available_resources = 0
         for edge in sn.edges(sn_subset[node_index]):
@@ -103,10 +105,31 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
     for vnr in vnr_list:
         maximum_cpu = max(vnr[0].nodes(data=True), key=lambda x: x[1]['cpu'])[1]['cpu']
         rest_sn_nodes = GetAvailableNodes(sn, maximum_cpu, vnr_list)
-        print("POSSIBLE NODES: ", rest_sn_nodes)
 
-        GetMaxAvailableResources(sn, rest_sn_nodes)
-        if vnr[0].number_of_nodes() > len(rest_sn_nodes):
+        # merge the list
+        MomList = rest_sn_nodes
+        sn_subset = []
+        for sublist in MomList:
+            for item in sublist:
+                sn_subset.append(item)
+
+        possible_sn_nodes = list(set(sn_subset))
+        GetMaxAvailableResources(sn, possible_sn_nodes)
+        print("POSSIBLE NODES: ", possible_sn_nodes)
+        print("REST SN NODES: ", rest_sn_nodes)
+
+        # change the possible_sn_nodes into a dict
+        cpus = {}
+        for node in possible_sn_nodes:
+            letter, cpu = node
+            cpus[letter] = cpu
+
+        # sort the rest_sn_nodes by the cpu value
+        sort_sn_nodes = []
+        for a in rest_sn_nodes:
+            sort_sn_nodes.append(sorted(a, key=lambda letter: cpus[letter]))
+
+        if vnr[0].number_of_nodes() > len(possible_sn_nodes):
             request_queue.append(vnr[0])
             continue
 
@@ -115,11 +138,12 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
             # print("SN NODES: ", sorted(sn.nodes().data()))
             sorted_vnr_nodes = SortVnrNodes(vnr[0])
-            # print("VNR NODES: ", sorted_vnr_nodes)
+            print("VNR NODES: ", sorted_vnr_nodes)
             # print("")
             for node in sorted_vnr_nodes:
                 # print("NODE:", node)
-                selected_sn_node = rest_sn_nodes.pop(0)
+               # if sorted_vnr_nodes.nodes['content'] in rest_sn_nodes.nodes['content']:
+                selected_sn_node = sort_sn_nodes.pop(0)
                 # print("SELECTED NODE:", selected_sn_node)
                 AddNodeMapping(node_mapping_list, vnr[0].graph['id'], node[0], selected_sn_node[0])
                 SubtractCpuResource(sn, selected_sn_node[0], vnr[0], node[0])
@@ -208,7 +232,7 @@ def PlottingVN(network):
 
 
 asn = [[70, 40, 60, 100, 80, 40, 60, 60, 60],
-       [[1, 2, 6], [2, 4], [3, 4], [4, 5], [2], [2, 6], [7], [3, 2], [2]]]
+       [[1, 2, 4], [2, 4], [3, 4], [4, 5], [2], [2, 6], [5, 7], [3, 2], [2]]]
 
 asl = [[0, 15, 0, 40, 0, 0, 0, 0, 0],
        [15, 0, 15, 5, 0, 0, 0, 0, 0],
@@ -220,16 +244,16 @@ asl = [[0, 15, 0, 40, 0, 0, 0, 0, 0],
        [0, 0, 0, 0, 0, 0, 10, 0, 10],
        [0, 0, 0, 0, 10, 0, 0, 10, 0]]
 
-cvn1 = [[10, 10, 10],
+cvn1 = [[10, 11, 8],
         [2, 3, 2],
         [2, 1, 3],
-        [1, 2, 3]]
+        [2, 1, 3]]
 
 cvl1 = [[0, 5, 5],
         [5, 0, 0],
         [5, 0, 0]]
 
-cvn2 = [[5, 5],
+cvn2 = [[5, 4],
         [3, 2],
         [2, 1],
         [4, 5]]
@@ -293,8 +317,8 @@ print("NODE DATA: ", sorted(sn.nodes.data()))
 print("EDGE DATA: ", sorted(sn.edges.data()))
 
 plt.subplot(122)
-# PlottingSN(sn)
-PlottingVN(vnr1)
+PlottingVN(sn)
+#PlottingVN(vnr1)
 # PlottingVN(vnr2)
 
 plt.show()
