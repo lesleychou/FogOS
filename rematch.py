@@ -1,13 +1,13 @@
 from crontab import CronTab
 
 # init
-cron = CronTab()
+cron = CronTab(user=True)
 
 # add new cron job
 
-job = cron.new(command='/Users/lesley/Downloads/FogOS/algo2019_Test.py')
+job = cron.new(command='/Users/lesley/Downloads/FogOS/algo2019_interface.py')
 
 # job settings
-job.minute.every(1)
+job.minute.every(0.5)
 
 cron.write()
