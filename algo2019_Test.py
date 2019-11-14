@@ -25,7 +25,7 @@ def GenerateEdges(network, edge_attributes):
 
 
 def GetRevenue(vnr_list):
-    print(len(vnr_list))
+    # print(len(vnr_list))
     for vnr_index in range(len(vnr_list)):
         revenue_components = []
         for node in vnr_list[vnr_index].nodes():
@@ -115,8 +115,8 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
         possible_sn_nodes = list(set(sn_subset))
         GetMaxAvailableResources(sn, possible_sn_nodes)
-        print("POSSIBLE NODES: ", possible_sn_nodes)
-        print("REST SN NODES: ", rest_sn_nodes)
+        # print("POSSIBLE NODES: ", possible_sn_nodes)
+        print("Filter SN NODES: ", rest_sn_nodes)
 
         # change the possible_sn_nodes into a dict
         cpus = {}
@@ -138,7 +138,7 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
             # print("SN NODES: ", sorted(sn.nodes().data()))
             sorted_vnr_nodes = SortVnrNodes(vnr[0])
-            print("VNR NODES: ", sorted_vnr_nodes)
+            # print("VNR NODES: ", sorted_vnr_nodes)
             # print("")
             for node in sorted_vnr_nodes:
                 # print("NODE:", node)
@@ -232,7 +232,7 @@ def PlottingVN(network):
 
 
 asn = [[70, 40, 60, 100, 80, 40, 60, 60, 60],
-       [[1, 2, 4], [2, 4], [3, 4], [4, 5], [2], [2, 6], [5, 7], [3, 2], [2]]]
+       [[1, 2, 5], [2, 4], [3, 4], [6, 7], [2], [2, 4], [5, 7], [3, 2], [8, 9]]]
 
 asl = [[0, 15, 0, 40, 0, 0, 0, 0, 0],
        [15, 0, 15, 5, 0, 0, 0, 0, 0],
@@ -280,7 +280,7 @@ GenerateVN_Nodes(vnr2, cvn2)
 GenerateEdges(vnr2, cvl2)
 
 plt.subplot(121)
-PlottingSN(sn)
+PlottingVN(sn)
 
 node_mapping_list = []
 edge_mapping_list = []
@@ -317,8 +317,8 @@ print("NODE DATA: ", sorted(sn.nodes.data()))
 print("EDGE DATA: ", sorted(sn.edges.data()))
 
 plt.subplot(122)
-PlottingVN(sn)
-#PlottingVN(vnr1)
-# PlottingVN(vnr2)
+# PlottingVN(sn)
+# PlottingVN(vnr1)
+PlottingVN(vnr2)
 
 plt.show()
