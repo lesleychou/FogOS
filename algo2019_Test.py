@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import string
 from collections import deque
 
-
 def GenerateVN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
         network.add_node(alphabet_dict[node_index + 1], cpu=node_attributes[0][node_index],
