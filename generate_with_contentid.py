@@ -23,11 +23,11 @@ def get_bw_string(node_id_list, bw_edge_dict):
     bw_str = bw_str + "\n"
   return bw_str
 
-MAX_NODE_ID = 100 
-MAX_CONTENT_ID = 1000
-MAX_COUNTENT_ID_COUNT = 50
-MIN_CPU = 10
-MAX_CPU = 50
+MAX_NODE_ID = 20 
+MAX_CONTENT_ID = 20
+MAX_COUNTENT_ID_COUNT = 5
+MIN_CPU = 9000
+MAX_CPU = 10000
 MIN_BANDWIDTH = 10
 MAX_BANDWIDTH = 50
 
@@ -45,13 +45,16 @@ random.seed(0)
 # }
 substrate_network = {}
 node_id_list = []
+all_cid  = []
 for nodeid in range(1, MAX_NODE_ID+1):
-  cpu = random.randint(MIN_CPU, MAX_CPU)
+  cpu = 100000
   cid_count = random.randint(1, MAX_COUNTENT_ID_COUNT)
   cid = random.sample(range(MAX_CONTENT_ID), cid_count)
+  all_cid = all_cid + cid
   substrate_network[nodeid] = [cpu, cid]
   node_id_list.append(nodeid)
 
+all_cid = list(set(all_cid))
 # Creates dictionary of bandwidth information in edge list format
 # {
 #   (nodeid_x, node_id_y): bw,  
@@ -90,21 +93,24 @@ MIN_DELAY = 0
 MAX_DELAY = 10
 MIN_MAXHOP = 1
 MAX_MAXHOP = 10
+VNR_MIN_CPU = 1
+VNR_MAX_CPU = 50
 
 vnr = []
 file_vnr = open("virtual_network_requests.txt", "w")
 # Create values for Virtual Network Requests (VNR)
 for vnr_id in range(1, VNR_COUNT+1):
   node_count = random.randint(2, MAX_NODE_ID/2)
-  request_node_id_list = sorted(random.sample(node_id_list, node_count))
+  # request_node_id_list = sorted(random.sample(node_id_list, node_count))
+  request_node_id_list = [i for i in range(1, node_count+1)]
   
   cpu_str, delay_str, maxhop_str, cid_str = "", "", "", ""
   for node_id in request_node_id_list:
     info = substrate_network[node_id]
-    cpu = random.randint(MIN_CPU, info[SN_CPU])
+    cpu = random.randint(VNR_MIN_CPU, VNR_MAX_CPU)
     delay = random.randint(MIN_DELAY, MAX_DELAY)
     maxhop = random.randint(MIN_MAXHOP, MAX_MAXHOP)
-    cid = random.sample(info[SN_CID], 1)[0]
+    cid = random.sample(all_cid, 1)[0]
     
     cpu_str = cpu_str + str(cpu) + " "
     delay_str = delay_str + str(delay) + " "

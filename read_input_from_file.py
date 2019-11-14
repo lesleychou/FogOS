@@ -63,7 +63,5 @@ def get_vnr_info():
 def get_all_input():
   asn, asl = get_sn_info()
   cvn, cvl = get_vnr_info()
-  print(cvl)
   return asn, asl, cvn, cvl
 
-get_all_input()

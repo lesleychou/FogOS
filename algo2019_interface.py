@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import string
 from collections import deque
 from itertools import islice
-import read_input_from_file
-
+from read_input_from_file import get_sn_info, get_vnr_info
 
 def GenerateVN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
@@ -25,7 +24,6 @@ def GenerateEdges(network, edge_attributes):
                 network.add_edge(alphabet_dict[row + 1], alphabet_dict[column + 1], bw=edge_attributes[row][column])
 
 def GetRevenue(vnr_list):
-    print(len(vnr_list))
     for vnr_index in range(len(vnr_list)):
         revenue_components = []
         for node in vnr_list[vnr_index].nodes():
@@ -125,7 +123,6 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
         possible_sn_nodes = list(set(sn_subset))
         GetMaxAvailableResources(sn, possible_sn_nodes)
-        print("POSSIBLE NODES: ", possible_sn_nodes)
         print("REST SN NODES: ", rest_sn_nodes)
 
         # change the possible_sn_nodes into a dict
@@ -147,7 +144,6 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
             vnr[0].graph['node_mapping_status'] = 1
 
             sorted_vnr_nodes = SortVnrNodes(vnr[0])
-            print("VNR NODES: ", sorted_vnr_nodes)
             for node in sorted_vnr_nodes:
                 selected_sn_node = sort_sn_nodes.pop(0)
                 AddNodeMapping(node_mapping_list, vnr[0].graph['id'], node[0], selected_sn_node[0])
@@ -208,93 +204,25 @@ def Plotting(network):
     nx.draw_networkx_edge_labels(network, pos, with_labels=True, edge_labels=network_edge_labels)
 
 
-def get_nextline_as_list(f):
-  return [int(i) for i in f.readline()[:-1].strip().split(' ')]
-
-
-def split_to_int(line):
-  return [int(i) for i in line.strip().split(' ')]
-
-
-def read_space(f):
-  f.readline()
-
 # Substrate Network Input
-file_sn = open("substrate_network.txt", "r")
+asn, asl = get_sn_info()
 
-asn, asl = [], []
-n = len(file_sn.readline().split(' '))
-cpu = get_nextline_as_list(file_sn)
-
-read_space(file_sn)
-cid = []
-for i in range(n):
-    cid.append(get_nextline_as_list(file_sn))
-
-read_space(file_sn)
-bw = []
-for i in range(n):
-    bw.append(get_nextline_as_list(file_sn))
-
-asn = [cpu, cid]
-asl = bw
-
-# For lettering purposes
+# # For lettering purposes
 alphabet_dict = dict(zip(range(1,len(asl)+1), string.ascii_uppercase))
 
-# Graph for Substrate Network
+# # Graph for Substrate Network
 sn = nx.Graph()
 GenerateSN_Nodes(sn, asn)
 GenerateEdges(sn, asl)
 
 # Virtual Network Requests
-file_vnr = open("virtual_network_requests.txt", "r")
-cvn, cvl = [], []
-read_data = file_vnr.read()
-
-flag = 1
-cpu, delay, maxhop, cid, bw = [], [], [], [], []
-for line in read_data.split("\n"):
-    if line == "":
-      if flag != 1:
-        cvn.append([cpu, delay, maxhop, cid])
-        cvl.append(bw)
-        bw = []
-      flag = 1
-      continue
-    elif flag == 3:
-      cpu = split_to_int(line)
-    elif flag == 4:
-      delay = split_to_int(line)
-    elif flag == 5:
-      maxhop = split_to_int(line)
-    elif flag == 6:
-      cid = split_to_int(line)
-    elif flag > 6:
-      bw.append(split_to_int(line))
-    flag = flag + 1
-
-
-vnr_requests = []
-flag = 1
-for line in read_data.split("\n"):
-    if line == "":
-        flag = 1
-    elif flag == 1:
-        vnr_requests.append([])
-        flag = 2
-    elif flag == 2:
-        vnr_requests[-1].append([int(data) for data in line.split(" ")])
-        vnr_requests[-1].append([])
-        flag = 3
-    elif flag == 3:
-        vnr_requests[-1][1].append([int(data) for data in line.split(" ")])
+cvn, cvl = get_vnr_info()
 
 vnr_graph_list = []
-for vnr_index in range(len(vnr_requests)):
+for vnr_index in range(len(cvn)):
     vnr_graph_list.append(nx.Graph(id=vnr_index+1, node_mapping_status=0, edge_mapping_status=0, splittable=0))
-    GenerateVN_Nodes(vnr_graph_list[vnr_index], vnr_requests[vnr_index][0])
-    GenerateEdges(vnr_graph_list[vnr_index], vnr_requests[vnr_index][1])
+    GenerateVN_Nodes(vnr_graph_list[vnr_index], cvn[vnr_index])
+    GenerateEdges(vnr_graph_list[vnr_index], cvl[vnr_index])
 
 node_mapping_list = []
 edge_mapping_list = []
