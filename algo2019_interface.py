@@ -131,6 +131,14 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
             letter, cpu = node
             cpus[letter] = cpu
 
+        enough_resources = True
+        for x in rest_sn_nodes:
+            if len(x) == 0:
+                print("Not enough SN resources")
+                enough_resources = False
+
+        if not enough_resources: break
+
         # sort the rest_sn_nodes by the cpu value
         sort_sn_nodes = []
         for a in rest_sn_nodes:
