@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import string
 from collections import deque
 from itertools import islice
-from read_input_from_file import get_sn_info, get_vnr_info
+from read_input_from_file import get_sn_info, get_vnr_info, get_dummy_input_with_delay, get_dummy_input_without_delay
 
 def GenerateVN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
@@ -215,6 +215,13 @@ def Plotting(network):
 # Substrate Network Input
 asn, asl = get_sn_info()
 
+# Virtual Network Requests
+cvn, cvl = get_vnr_info()
+
+# DUMMY INPUT
+# asn, asl, cvn, cvl = get_dummy_input_without_delay()
+# asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
+
 # # For lettering purposes
 alphabet_dict = dict(zip(range(1,len(asl)+1), string.ascii_uppercase))
 
@@ -223,8 +230,6 @@ sn = nx.Graph()
 GenerateSN_Nodes(sn, asn)
 GenerateEdges(sn, asl)
 
-# Virtual Network Requests
-cvn, cvl = get_vnr_info()
 
 vnr_graph_list = []
 for vnr_index in range(len(cvn)):
