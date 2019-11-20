@@ -1,14 +1,16 @@
 import random
 import itertools
 
-# Returns a string format matrix representation of bandwith between edges
-#   1 2 3 ... N
-# 1 0 6 7 ... 1
-# 2 6 0 3 ... 9
-# 3 7 3 0 ... 7
-# ....... ... .
-# N 1 9 7 ... 0
 def get_bw_string(node_id_list, bw_edge_dict):
+  '''
+  Returns a string format matrix representation of bandwith between edges
+    1 2 3 ... N
+  1 0 6 7 ... 1
+  2 6 0 3 ... 9
+  3 7 3 0 ... 7
+  ....... ... .
+  N 1 9 7 ... 0
+  '''
   bw_str = ""
   for row in node_id_list:
     for col in node_id_list:
@@ -37,12 +39,14 @@ SN_CID = 1
 # Add a seed for constant random generation
 random.seed(0)
 
-# Creates dictionary of substrate network
-# { 
-#   nodeid_1: [cpu, cid],
-#   nodeid_2: [cpu, cid],
-#   ... 
-# }
+'''
+Creates dictionary of substrate network
+  { 
+    nodeid_1: [cpu, cid],
+    nodeid_2: [cpu, cid],
+    ... 
+  }
+'''
 substrate_network = {}
 node_id_list = []
 all_cid  = []
@@ -55,12 +59,15 @@ for nodeid in range(1, MAX_NODE_ID+1):
   node_id_list.append(nodeid)
 
 all_cid = list(set(all_cid))
-# Creates dictionary of bandwidth information in edge list format
-# {
-#   (nodeid_x, node_id_y): bw,  
-#   (nodeid_x, node_id_y): bw,  
-#   ... 
-# }
+
+'''
+Creates dictionary of bandwidth for substrate network in edge list format
+  {
+    (nodeid_x, node_id_y): bw,  
+    (nodeid_x, node_id_y): bw,  
+    ... 
+  }
+'''
 sn_bw_edge = list(itertools.combinations(node_id_list, 2))
 sn_bw_edge_dict = dict(list(map(lambda x: ((x[0], x[1]), random.randint(MIN_BANDWIDTH, MAX_BANDWIDTH)), sn_bw_edge)))
 
@@ -121,20 +128,22 @@ for vnr_id in range(1, VNR_COUNT+1):
   bw_edge_dict = dict(list(map(lambda x: ((x[0], x[1]), random.randint(1, sn_bw_edge_dict[x])), bw_edge)))
   bw_str = get_bw_string(request_node_id_list, bw_edge_dict)
 
-  # Write to file: ith VNR
-  # Line 1 -> VNR ID
+  '''
+  Write to file: ith VNR
+    Line 1 -> VNR ID
+    Line 2 -> space-separated node ids
+    Line 3 -> space-separated cpu values 
+    Line 4 -> space-separated delay values 
+    Line 5 -> space-separated maxhop values 
+    Line 6 -> space-separated cid values 
+    Next N (number of nodes) lines -> Matrix of bandwith values
+  '''
   file_vnr.write(str(vnr_id) + "\n")
-  # Line 2 -> space-separated node ids
   file_vnr.write(str(request_node_id_list).strip("[]").replace(',', '') + "\n")
-  # Line 3 -> space-separated cpu values 
   file_vnr.write(cpu_str.strip() + "\n")
-  # Line 4 -> space-separated delay values 
   file_vnr.write(delay_str.strip() + "\n")
-  # Line 5 -> space-separated maxhop values 
   file_vnr.write(maxhop_str.strip() + "\n")
-  # Line 6 -> space-separated cid values 
   file_vnr.write(cid_str.strip() + "\n")
-  # Next N (number of nodes) lines -> Matrix of bandwith values
   file_vnr.write(bw_str.strip() + "\n\n")
 
   
