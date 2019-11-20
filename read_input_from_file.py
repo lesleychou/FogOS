@@ -102,12 +102,10 @@ def get_dummy_input_without_delay():
   cvn = [
     [                 # VNR 1 Data:
       [10, 11, 8],    #   CPU
-      [2, 3, 2],      #   Delay  
       [2, 1, 3],      #   Maxhop
       [2, 1, 3]       #   CID
     ] , [
       [5, 4],
-      [3, 2],
       [2, 1],
       [4, 5]
     ]
@@ -135,7 +133,7 @@ def get_dummy_input_with_delay():
       [10, 11, 8],    #   CPU
       [2, 1, 3],      #   Maxhop
       [2, 1, 3]       #   CID
-    ] , [
+    ], [
       [5, 4],
       [2, 1],
       [4, 5]
@@ -172,7 +170,7 @@ def get_dummy_input_with_delay():
       [10, 11, 8, 0, 0, 0],     #   CPU
       [2, 1, 3, 0, 0, 0],       #   Maxhop
       [2, 1, 3, -1, -1, -1]     #   CID
-    ] , [
+    ], [
       [5, 4, 0, 0, 0, 0],
       [2, 1, 0, 0, 0, 0],
       [4, 5, -1, -1, -1, -1]

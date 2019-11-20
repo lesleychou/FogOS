@@ -8,8 +8,7 @@ from read_input_from_file import get_sn_info, get_vnr_info, get_dummy_input_with
 def GenerateVN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
         network.add_node(alphabet_dict[node_index + 1], cpu=node_attributes[0][node_index],
-                         delay=node_attributes[1][node_index], maxhop=node_attributes[2][node_index],
-                         content=node_attributes[3][node_index])
+                         maxhop=node_attributes[1][node_index], content=node_attributes[2][node_index])
 
 def GenerateSN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
@@ -28,7 +27,6 @@ def GetRevenue(vnr_list):
         revenue_components = []
         for node in vnr_list[vnr_index].nodes():
             revenue_components.append(vnr_list[vnr_index].nodes[node]['cpu'])  # change something here?????
-            revenue_components.append(vnr_list[vnr_index].nodes[node]['delay'])
             revenue_components.append(vnr_list[vnr_index].nodes[node]['maxhop'])
             revenue_components.append(vnr_list[vnr_index].nodes[node]['content'])
 
@@ -45,7 +43,11 @@ def GetAvailableNodes(sn, maximum_cpu, vnr_list):
         for node1 in vnr[0].nodes():
             temp = []
             for node in sn.nodes():
-                if vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
+                # if cid == -1 then it can map to all the sn nodes
+                if vnr[0].nodes[node1]['content'] == -1:
+                    temp.append(node)
+                # otherwise, match as below
+                elif vnr[0].nodes[node1]['content'] in sn.nodes[node]['content']:
                     temp.append(node)
             match_SN_nodes.append(temp)
 
@@ -213,14 +215,14 @@ def Plotting(network):
 
 
 # Substrate Network Input
-asn, asl = get_sn_info()
+#asn, asl = get_sn_info()
 
 # Virtual Network Requests
-cvn, cvl = get_vnr_info()
+#cvn, cvl = get_vnr_info()
 
 # DUMMY INPUT
 # asn, asl, cvn, cvl = get_dummy_input_without_delay()
-# asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
+asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
 
 # # For lettering purposes
 alphabet_dict = dict(zip(range(1,len(asl)+1), string.ascii_uppercase))
@@ -230,22 +232,39 @@ sn = nx.Graph()
 GenerateSN_Nodes(sn, asn)
 GenerateEdges(sn, asl)
 
+sn_d = nx.Graph()
+GenerateSN_Nodes(sn_d, asn)
+GenerateEdges(sn_d, asl)
 
-vnr_graph_list = []
+
+vnr_graph_nodelay_list = []
 for vnr_index in range(len(cvn)):
-    vnr_graph_list.append(nx.Graph(id=vnr_index+1, node_mapping_status=0, edge_mapping_status=0, splittable=0))
-    GenerateVN_Nodes(vnr_graph_list[vnr_index], cvn[vnr_index])
-    GenerateEdges(vnr_graph_list[vnr_index], cvl[vnr_index])
+    vnr_graph_nodelay_list.append(nx.Graph(id=vnr_index+1, node_mapping_status=0, edge_mapping_status=0, splittable=0))
+    GenerateVN_Nodes(vnr_graph_nodelay_list[vnr_index], cvn[vnr_index])
+    GenerateEdges(vnr_graph_nodelay_list[vnr_index], cvl[vnr_index])
+
+vnr_graph_delay_list = []
+for vnr_index in range(len(cvn_delay)):
+    vnr_graph_delay_list.append(nx.Graph(id=vnr_index+1, node_mapping_status=0, edge_mapping_status=0, splittable=0))
+    GenerateVN_Nodes(vnr_graph_delay_list[vnr_index], cvn_delay[vnr_index])
+    GenerateEdges(vnr_graph_delay_list[vnr_index], cvl_delay[vnr_index])
+
 
 node_mapping_list = []
 edge_mapping_list = []
 request_queue = deque()
-GetRevenue(vnr_graph_list)
+node_mapping_list_d = []
+edge_mapping_list_d = []
+request_queue_d = deque()
+
+GetRevenue(vnr_graph_nodelay_list)
+GetRevenue(vnr_graph_delay_list)
 
 # Greedy Node Mapping
-successful_node_mapping = GreedyNodeMapping(sn, vnr_graph_list, node_mapping_list, request_queue)
+successful_node_mapping = GreedyNodeMapping(sn, vnr_graph_nodelay_list, node_mapping_list, request_queue)
+successful_node_mapping_d = GreedyNodeMapping(sn_d, vnr_graph_delay_list, node_mapping_list_d, request_queue_d)
 
-# k-Shortest Path Link Mapping
+# k-Shortest Path Link Mapping: no delay
 unsplittable_vnr = []
 splittable_vnr = []
 
@@ -259,22 +278,38 @@ GetRevenue(unsplittable_vnr)
 GetRevenue(splittable_vnr)
 UnsplittableLinkMapping(sn, unsplittable_vnr, node_mapping_list, edge_mapping_list, request_queue)
 
+# k-Shortest Path Link Mapping: delay
+unsplittable_vnr_d = []
+splittable_vnr_d = []
+
+for vnr in successful_node_mapping_d:
+    if vnr.graph['splittable'] == 0:
+        unsplittable_vnr_d.append(vnr)
+    else:
+        splittable_vnr_d.append(vnr)
+
+GetRevenue(unsplittable_vnr_d)
+GetRevenue(splittable_vnr_d)
+UnsplittableLinkMapping(sn_d, unsplittable_vnr_d, node_mapping_list_d, edge_mapping_list_d, request_queue_d)
+
 # Writing to Output File
 output_file = open('results.txt', 'w+')
 out = open('results_original_arrangement.txt', 'w+')
 accepted_count = 0
 results = []
-for vnr in vnr_graph_list:
-    if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1:
-        results.append((vnr[0].graph['id'], "Accepted"))
-        out.write("Result " + str(vnr[0].graph['id']) + ": Accepted\n")
-        accepted_count += 1
-    else:
-        results.append((vnr[0].graph['id'], "Rejected"))
-        out.write("Result " + str(vnr[0].graph['id']) + ": Rejected\n")
+for vnr in vnr_graph_nodelay_list:
+    for vnd in vnr_graph_delay_list:
+        if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1 or \
+                vnd[0].graph['node_mapping_status'] == 1 and vnd[0].graph['edge_mapping_status'] == 1:
+            results.append((vnr[0].graph['id'], "Accepted"))
+            out.write("Result " + str(vnr[0].graph['id']) + ": Accepted\n")
+            accepted_count += 1
+        else:
+            results.append((vnr[0].graph['id'], "Rejected"))
+            out.write("Result " + str(vnr[0].graph['id']) + ": Rejected\n")
 
 for item in sorted(results, key=lambda x:x[0]):
     output_file.write("Result " + str(item[0]) + ": " + item[1] + "\n")
 
-output_file.write("Acceptance Ratio: " + str(accepted_count/len(vnr_graph_list)*100) + "%")
-out.write("Acceptance Ratio: " + str(accepted_count/len(vnr_graph_list)*100) + "%")
+output_file.write("Acceptance Ratio: " + str(accepted_count/len(vnr_graph_delay_list)*100) + "%")
+out.write("Acceptance Ratio: " + str(accepted_count/len(vnr_graph_delay_list)*100) + "%")

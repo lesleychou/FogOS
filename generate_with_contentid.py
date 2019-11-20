@@ -25,11 +25,11 @@ def get_bw_string(node_id_list, bw_edge_dict):
     bw_str = bw_str + "\n"
   return bw_str
 
-MAX_NODE_ID = 20 
+MAX_NODE_ID = 26
 MAX_CONTENT_ID = 20
-MAX_COUNTENT_ID_COUNT = 5
-MIN_CPU = 9000
-MAX_CPU = 10000
+MAX_COUNTENT_ID_COUNT = 10
+MIN_CPU = 5000
+MAX_CPU = 6000
 MIN_BANDWIDTH = 10
 MAX_BANDWIDTH = 50
 
@@ -51,7 +51,8 @@ substrate_network = {}
 node_id_list = []
 all_cid  = []
 for nodeid in range(1, MAX_NODE_ID+1):
-  cpu = 100000
+  cpu = 1000
+  # cpu = random.randint(MIN_CPU, MAX_CPU)
   cid_count = random.randint(1, MAX_COUNTENT_ID_COUNT)
   cid = random.sample(range(MAX_CONTENT_ID), cid_count)
   all_cid = all_cid + cid
