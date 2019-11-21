@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import string
 from collections import deque
 from itertools import islice
-from read_input_from_file import get_sn_info, get_vnr_info, get_dummy_input_with_delay, get_dummy_input_without_delay
+from read_input_from_file import get_all_input
 
 def GenerateVN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
@@ -91,8 +91,10 @@ def SubtractCpuResource(sn, sn_node, vnr, vnr_node):
 def ReturnCpuResource(sn, vnr, node_mapping):
     sn.nodes[node_mapping[2]]['cpu'] += vnr.nodes[node_mapping[1]]['cpu']
 
-def RemoveNodeMapping(sn, vnr, node_mapping):
+def RemoveNodeMapping(sn, vnr, node_mapping, node_mapping_list):
     ReturnCpuResource(sn, vnr, node_mapping)
+    # print(node_mapping_list)
+    print(node_mapping)
     node_mapping_list.remove(node_mapping)
 
 def AddEdgeMapping(edge_mapping_list, vnr_id, vnr_edge, sn_path):
@@ -112,7 +114,8 @@ def GetSnNodeMapping(node_mapping_list, vnr_id, vnr_node):
 
 def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
     successful_node_mapping = []
-    for vnr in vnr_list:
+    for gwen, vnr in enumerate(vnr_list):
+        print("Mapping vnr ", gwen)
         maximum_cpu = max(vnr[0].nodes(data=True), key=lambda x: x[1]['cpu'])[1]['cpu']
         rest_sn_nodes = GetAvailableNodes(sn, maximum_cpu, vnr_list)
 
@@ -125,7 +128,7 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
 
         possible_sn_nodes = list(set(sn_subset))
         GetMaxAvailableResources(sn, possible_sn_nodes)
-        print("REST SN NODES: ", rest_sn_nodes)
+        # print("REST SN NODES: ", rest_sn_nodes)
 
         # change the possible_sn_nodes into a dict
         cpus = {}
@@ -191,7 +194,7 @@ def UnsplittableLinkMapping(sn, vnr_list, node_mapping_list, edge_mapping_list, 
                     break
         if (len(selected_paths) < vnr[0].number_of_edges()):
             for node_mapping in list(filter(lambda x: x[0] == vnr[0].graph['id'], node_mapping_list)):
-                RemoveNodeMapping(sn, vnr[0], node_mapping)
+                RemoveNodeMapping(sn, vnr[0], node_mapping, node_mapping_list)
             request_queue.append(vnr[0])
         else:
             vnr[0].graph['edge_mapping_status'] = 1
@@ -214,18 +217,11 @@ def Plotting(network):
     nx.draw_networkx_edge_labels(network, pos, with_labels=True, edge_labels=network_edge_labels)
 
 
-# Substrate Network Input
-#asn, asl = get_sn_info()
-
-# Virtual Network Requests
-#cvn, cvl = get_vnr_info()
-
-# DUMMY INPUT
-# asn, asl, cvn, cvl = get_dummy_input_without_delay()
-asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
+# Substrate Network Input and Virtual Network Requests
+asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_all_input()
 
 # # For lettering purposes
-alphabet_dict = dict(zip(range(1,len(asl)+1), string.ascii_uppercase))
+alphabet_dict = dict(zip(range(1,len(asl)+1), map(str, range(1000 + 1))))
 
 # # Graph for Substrate Network
 sn = nx.Graph()
@@ -297,16 +293,17 @@ output_file = open('results.txt', 'w+')
 out = open('results_original_arrangement.txt', 'w+')
 accepted_count = 0
 results = []
-for vnr in vnr_graph_nodelay_list:
-    for vnd in vnr_graph_delay_list:
-        if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1 or \
-                vnd[0].graph['node_mapping_status'] == 1 and vnd[0].graph['edge_mapping_status'] == 1:
-            results.append((vnr[0].graph['id'], "Accepted"))
-            out.write("Result " + str(vnr[0].graph['id']) + ": Accepted\n")
-            accepted_count += 1
-        else:
-            results.append((vnr[0].graph['id'], "Rejected"))
-            out.write("Result " + str(vnr[0].graph['id']) + ": Rejected\n")
+for index, vnr in enumerate(vnr_graph_nodelay_list):
+    # for vnd in vnr_graph_delay_list:
+    vnd = vnr_graph_delay_list[index]
+    if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1 or \
+            vnd[0].graph['node_mapping_status'] == 1 and vnd[0].graph['edge_mapping_status'] == 1:
+        results.append((vnr[0].graph['id'], "Accepted"))
+        out.write("Result " + str(vnr[0].graph['id']) + ": Accepted\n")
+        accepted_count += 1
+    else:
+        results.append((vnr[0].graph['id'], "Rejected"))
+        out.write("Result " + str(vnr[0].graph['id']) + ": Rejected\n")
 
 for item in sorted(results, key=lambda x:x[0]):
     output_file.write("Result " + str(item[0]) + ": " + item[1] + "\n")

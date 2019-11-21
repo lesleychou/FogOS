@@ -1,6 +1,8 @@
 import random
 import itertools
 
+# random.seed(0)
+
 def get_bw_string(node_id_list, bw_edge_dict):
   '''
   Returns a string format matrix representation of bandwith between edges
@@ -33,8 +35,8 @@ def getString(char, count):
   for i in range(count):
     string = string + char + ' '
   return string
- 
-MAX_NODE_ID = 26
+
+MAX_NODE_ID = 500
 MAX_CONTENT_ID = 20
 MAX_CONTENT_ID_COUNT = 10
 MIN_CPU = 5000
@@ -105,19 +107,21 @@ for nodeid, info in substrate_network.items():
 file_sn.write("\n")
 file_sn.write(bw_str)
 
-VNR_COUNT = 50
+VNR_COUNT = 10
 MIN_DELAY = 1
-MAX_DELAY = 5
+MAX_DELAY = 3
 MIN_MAXHOP = 1
 MAX_MAXHOP = 10
 VNR_MIN_CPU = 1
 VNR_MAX_CPU = 50
+MAX_NODE_ID_VNR = 20
 
 vnr = []
 file_vnr = open("virtual_network_requests.txt", "w")
 # Create values for Virtual Network Requests (VNR)
 for vnr_id in range(1, VNR_COUNT+1):
-  node_count = random.randint(2, MAX_NODE_ID/2)
+  print("VNR ", vnr_id)
+  node_count = random.randint(2, MAX_NODE_ID_VNR)
   # request_node_id_list = sorted(random.sample(node_id_list, node_count))
   request_node_id_list = [i for i in range(1, node_count+1)]
   
@@ -151,7 +155,7 @@ for vnr_id in range(1, VNR_COUNT+1):
     delay = delay_edge_dict[key]
     if delay > 1:
       new_delay = int(bw/delay)
-      num_new_nodes = int(bw/new_delay)
+      num_new_nodes = delay - 1
       bw_edge_dict_with_delay[key] = 0
       node_a, node_b = key
       if num_new_nodes == 1:
@@ -162,7 +166,7 @@ for vnr_id in range(1, VNR_COUNT+1):
       else:
         for i in range(num_new_nodes):
           node_new = node_count + 1
-          if i == 1:
+          if i == 0:
             # First node    
             bw_edge_dict_with_delay[(node_a, node_new)] = new_delay
             bw_edge_dict_with_delay[(node_new, node_new + 1)] = new_delay
@@ -173,7 +177,6 @@ for vnr_id in range(1, VNR_COUNT+1):
             # In-between nodes
             bw_edge_dict_with_delay[(node_new, node_new + 1)] = new_delay
           node_count = node_count + 1
-
   added_node_count = node_count - len(request_node_id_list)
   
   cpu_str = cpu_str + getString('0', added_node_count)
