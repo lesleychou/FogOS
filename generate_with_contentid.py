@@ -121,32 +121,30 @@ for vnr_id in range(1, VNR_COUNT+1):
   # request_node_id_list = sorted(random.sample(node_id_list, node_count))
   request_node_id_list = [i for i in range(1, node_count+1)]
   
-  # cpu_str, delay_str, maxhop_str, cid_str = "", "", "", ""
   cpu_str, maxhop_str, cid_str = "", "", ""
   for node_id in request_node_id_list:
     info = substrate_network[node_id]
     cpu = random.randint(VNR_MIN_CPU, VNR_MAX_CPU)
-    # delay = random.randint(MIN_DELAY, MAX_DELAY)
     maxhop = random.randint(MIN_MAXHOP, MAX_MAXHOP)
     cid = random.sample(all_cid, 1)[0]
     
     cpu_str = cpu_str + str(cpu) + " "
-    # delay_str = delay_str + str(delay) + " "
     maxhop_str = maxhop_str + str(maxhop) + " "
     cid_str = cid_str + str(cid) + " "
-
-  file_vnr.write(str(vnr_id) + "\n")
-  file_vnr.write(str(request_node_id_list).strip("[]").replace(',', '') + "\n")
-  file_vnr.write(cpu_str.strip() + "\n")
-  file_vnr.write(maxhop_str.strip() + "\n")
-  file_vnr.write(cid_str.strip() + "\n")
-  file_vnr.write(bw_str.strip() + "\n")
 
   delay_edge = list(itertools.combinations(request_node_id_list, 2))
   delay_edge_dict = dict(list(map(lambda x: ((x[0], x[1]), random.randint(MIN_DELAY, MAX_DELAY)), delay_edge)))
 
   bw_edge = list(itertools.combinations(request_node_id_list, 2))
   bw_edge_dict = dict(list(map(lambda x: ((x[0], x[1]), random.randint(MAX_DELAY, sn_bw_edge_dict[x])), bw_edge)))
+  bw_str = get_bw_string(request_node_id_list, bw_edge_dict)
+  
+  file_vnr.write(str(vnr_id) + "\n")
+  file_vnr.write(str(request_node_id_list).strip("[]").replace(',', '') + "\n")
+  file_vnr.write(cpu_str.strip() + "\n")
+  file_vnr.write(maxhop_str.strip() + "\n")
+  file_vnr.write(cid_str.strip() + "\n")
+  file_vnr.write(bw_str.strip() + "\n")
 
   bw_edge_dict_with_delay = bw_edge_dict.copy()
   for key, bw in bw_edge_dict.items():
@@ -182,12 +180,7 @@ for vnr_id in range(1, VNR_COUNT+1):
   maxhop_str = maxhop_str +  getString('0', added_node_count)
   cid_str = cid_str +  getString('-1', added_node_count)
 
-  bw_str = get_bw_string(request_node_id_list, bw_edge_dict)
-
   request_node_id_list = [i for i in range(1, node_count+1)]
-  # print(node_count)
-  # print(bw_edge_dict_with_delay)
-  # print(request_node_id_list)
   bw_str_delay = get_bw_string(request_node_id_list, bw_edge_dict_with_delay)
 
   '''
@@ -198,11 +191,14 @@ for vnr_id in range(1, VNR_COUNT+1):
     Line 4 -> space-separated maxhop values 
     Line 5 -> space-separated cid values 
     Next N (number of nodes) lines -> Matrix of bandwith values (without delay)
+    Next Line -> space-separated node ids
+    Next Line-> space-separated cpu values 
+    Next Line -> space-separated maxhop values 
+    Next Line -> space-separated cid values 
     Next N (number of nodes) lines -> Matrix of bandwith values (with delay)
   '''
   file_vnr.write(str(request_node_id_list).strip("[]").replace(',', '') + "\n")
   file_vnr.write(cpu_str.strip() + "\n")
-  # file_vnr.write(delay_str.strip() + "\n")
   file_vnr.write(maxhop_str.strip() + "\n")
   file_vnr.write(cid_str.strip() + "\n")
   file_vnr.write(bw_str_delay.strip() + "\n\n")

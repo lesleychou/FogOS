@@ -31,39 +31,41 @@ def get_sn_info():
 
   return asn, asl
 
-
 def get_vnr_info():
   cvn, cvl = [], []
+  cvn_delay, cvl_delay = [], []
   read_data = file_vnr.read()
 
-  flag = 1
-  cpu, delay, maxhop, cid, bw = [], [], [], [], []
-  for line in read_data.split("\n"):
-    if line == "":
-      if flag != 1:
-        cvn.append([cpu, delay, maxhop, cid])
-        cvl.append(bw)
-        bw = []
-      flag = 1
-      continue
-    elif flag == 3:
-      cpu = split_to_int(line)
-    elif flag == 4:
-      delay = split_to_int(line)
-    elif flag == 5:
-      maxhop = split_to_int(line)
-    elif flag == 6:
-      cid = split_to_int(line)
-    elif flag > 6: 
-      bw.append(split_to_int(line))
-    flag = flag + 1
-     
-  return cvn, cvl
+  for vnr in read_data.split("\n\n")[:-1]:
+    vnr_lines = vnr.split("\n")
+    node_count = len(split_to_int(vnr_lines[1]))
+    cpu = split_to_int(vnr_lines[2])
+    maxhop = split_to_int(vnr_lines[3])
+    cid = split_to_int(vnr_lines[4])
+    bw = []
+    for i in range(5, node_count + 5):
+      bw.append(split_to_int(vnr_lines[i]))
+
+    cvn.append([cpu, maxhop, cid])
+    cvl.append(bw)
+
+    node_count = len(split_to_int(vnr_lines[5]))
+    cpu_del = split_to_int(vnr_lines[node_count + 6])
+    maxhop_del = split_to_int(vnr_lines[node_count + 7])
+    cid_del = split_to_int(vnr_lines[node_count + 8])
+    bw_del = []
+    for i in range(node_count + 9, len(vnr_lines)):
+      bw_del.append(split_to_int(vnr_lines[i]))
+
+    cvn_delay.append([cpu_del, maxhop_del, cid_del])
+    cvl_delay.append(bw_del)
+
+  return cvn, cvl, cvn_delay, cvl_delay
 
 def get_all_input():
   asn, asl = get_sn_info()
-  cvn, cvl = get_vnr_info()
-  return asn, asl, cvn, cvl
+  cvn, cvl, cvn_delay, cvl_delay = get_vnr_info()
+  return asn, asl, cvn, cvl, cvn_delay, cvl_delay
 
 def get_dummy_asn_asl():
   asn = [
@@ -201,10 +203,10 @@ def get_dummy_input_with_delay():
 
 if __name__ == "__main__":
   # TESTING
-  asn, asl, cvn, cvl = get_dummy_input_without_delay()
-  print(asn, asl, cvn, cvl, sep='\n')
-  asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
-  print(asn, asl, cvn, cvl, cvn_delay, cvl_delay, sep='\n')
-
+  # asn, asl, cvn, cvl = get_dummy_input_without_delay()
+  # print(asn, asl, cvn, cvl, sep='\n')
+  # asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
+  # print(asn, asl, cvn, cvl, cvn_delay, cvl_delay, sep='\n')
+  asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_all_input()
 
 
