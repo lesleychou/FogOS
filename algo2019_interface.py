@@ -225,7 +225,10 @@ def Plotting(network):
 asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
 
 # # For lettering purposes
-alphabet_dict = dict(zip(range(1,len(asl)+1), string.ascii_uppercase))
+alphabet_dict = dict(zip(range(1, len(asl)+1), string.ascii_uppercase))
+# # For large SN
+# alphabet_dict = dict(zip(range(1,len(asl)+1), map(str, range(100 + 1))))
+
 
 # # Graph for Substrate Network
 sn = nx.Graph()
