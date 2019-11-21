@@ -107,7 +107,7 @@ for nodeid, info in substrate_network.items():
 file_sn.write("\n")
 file_sn.write(bw_str)
 
-VNR_COUNT = 10
+VNR_COUNT = 50
 MIN_DELAY = 1
 MAX_DELAY = 3
 MIN_MAXHOP = 1

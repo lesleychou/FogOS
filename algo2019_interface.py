@@ -114,8 +114,8 @@ def GetSnNodeMapping(node_mapping_list, vnr_id, vnr_node):
 
 def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
     successful_node_mapping = []
-    for gwen, vnr in enumerate(vnr_list):
-        print("Mapping vnr ", gwen)
+    for index, vnr in enumerate(vnr_list):
+        print("Mapping vnr ", index)
         maximum_cpu = max(vnr[0].nodes(data=True), key=lambda x: x[1]['cpu'])[1]['cpu']
         rest_sn_nodes = GetAvailableNodes(sn, maximum_cpu, vnr_list)
 
