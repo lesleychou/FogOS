@@ -36,11 +36,11 @@ def getString(char, count):
     string = string + char + ' '
   return string
 
-MAX_NODE_ID = 500
+MAX_NODE_ID = 200
 MAX_CONTENT_ID = 20
 MAX_CONTENT_ID_COUNT = 10
-MIN_CPU = 5000
-MAX_CPU = 6000
+MIN_CPU = 500
+MAX_CPU = 1000
 MIN_BANDWIDTH = 10
 MAX_BANDWIDTH = 50
 
@@ -62,7 +62,7 @@ substrate_network = {}
 node_id_list = []
 all_cid  = []
 for nodeid in range(1, MAX_NODE_ID+1):
-  cpu = 1000
+  cpu = 400
   # cpu = random.randint(MIN_CPU, MAX_CPU)
   cid_count = random.randint(1, MAX_CONTENT_ID_COUNT)
   cid = random.sample(range(MAX_CONTENT_ID), cid_count)
@@ -107,13 +107,13 @@ for nodeid, info in substrate_network.items():
 file_sn.write("\n")
 file_sn.write(bw_str)
 
-VNR_COUNT = 50
+VNR_COUNT = 10
 MIN_DELAY = 1
 MAX_DELAY = 3
 MIN_MAXHOP = 1
 MAX_MAXHOP = 10
-VNR_MIN_CPU = 1
-VNR_MAX_CPU = 50
+VNR_MIN_CPU = 4000
+VNR_MAX_CPU = 5000
 MAX_NODE_ID_VNR = 20
 
 vnr = []
