@@ -216,7 +216,7 @@ def Plotting(network):
 
 
 # Substrate Network Input and Virtual Network Requests
-asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_all_input()
+asn, asl, cvn, cvl = get_all_input()
 
 # # For lettering purposes
 # alphabet_dict = dict(zip(range(1, len(asl)+1), string.ascii_uppercase))
