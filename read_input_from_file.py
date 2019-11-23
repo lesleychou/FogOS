@@ -65,7 +65,7 @@ def get_vnr_info():
 def get_all_input():
   asn, asl = get_sn_info()
   cvn, cvl, cvn_delay, cvl_delay = get_vnr_info()
-  return asn, asl, cvn, cvl, cvn_delay, cvl_delay
+  return asn, asl, cvn, cvl
 
 def get_dummy_asn_asl():
   asn = [
