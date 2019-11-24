@@ -265,58 +265,16 @@ output_file = open('results.txt', 'w+')
 out = open('results_original_arrangement.txt', 'w+')
 accepted_count = 0
 results = []
-'''
-for index, vnr in enumerate(vnr_graph_nodelay_list):
-    # for vnd in vnr_graph_delay_list:
-    vnd = vnr_graph_delay_list[index]
-    if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1 or \
-            vnd[0].graph['node_mapping_status'] == 1 and vnd[0].graph['edge_mapping_status'] == 1:
-        results.append((vnr[0].graph['id'], "Accepted"))
-        out.write("Result " + str(vnr[0].graph['id']) + ": Accepted\n")
-        accepted_count += 1
-'''
 
 vnr_graph_list.sort(key=lambda x:x[0].graph['id'], reverse=True)
 
 vnr_no_delay = vnr_graph_list[0:][::2]
 vnr_delay = vnr_graph_list[1:][::2]
 
-for i in vnr_graph_list:
-    print("VNR id")
-    print(i[0].graph['id'])
-
 for index, vnr in enumerate(vnr_no_delay):
     # for vnd in vnr_graph_delay_list:
     vnd = vnr_delay[index]
 
-    vnr_node_mapping_status = vnr[0].graph['node_mapping_status']
-    vnr_edge_mapping_status = vnr[0].graph['edge_mapping_status']
-
-    print("index")
-    print(index)
-
-    print("vnr node mapping status")
-    print(vnr_node_mapping_status)
-
-    print("vnr edge mapping status")
-    print(vnr_edge_mapping_status)
-
-    print("vnr graph ID")
-    print(vnr[0].graph['id'])
-
-    print("vnd node mapping status")
-    print(vnd[0].graph['node_mapping_status'])
-
-    print("vnd edge mapping status")
-    print(vnd[0].graph['edge_mapping_status'])
-
-    print("vnd graph ID")
-    print(vnd[0].graph['id'])
-
-    '''
-    if index == 3:
-        pdb.set_trace()
-    '''
     message = ''
 
     if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1:
