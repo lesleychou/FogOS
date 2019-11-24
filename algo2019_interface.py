@@ -275,8 +275,6 @@ for index, vnr in enumerate(vnr_no_delay):
     # for vnd in vnr_graph_delay_list:
     vnd = vnr_delay[index]
 
-    message = ''
-
     if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1:
         results.append((vnr[0].graph['id'], "Accepted VNR"))
         accepted_count += 1
