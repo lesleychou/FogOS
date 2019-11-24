@@ -4,6 +4,7 @@ import string
 from collections import deque
 from itertools import islice
 from read_input_from_file import get_all_input
+import pdb
 
 def GenerateVN_Nodes(network, node_attributes):
     for node_index in range(len(node_attributes[0])):
@@ -93,7 +94,7 @@ def ReturnCpuResource(sn, vnr, node_mapping):
 
 def RemoveNodeMapping(sn, vnr, node_mapping, node_mapping_list):
     ReturnCpuResource(sn, vnr, node_mapping)
-    print(node_mapping)
+    # print(node_mapping)
     node_mapping_list.remove(node_mapping)
 
 def AddEdgeMapping(edge_mapping_list, vnr_id, vnr_edge, sn_path):
@@ -147,7 +148,7 @@ def GreedyNodeMapping(sn, vnr_list, node_mapping_list, request_queue):
         for a in rest_sn_nodes:
             sort_sn_nodes.append(sorted(a, key=lambda letter: cpus[letter]))
 
-        if vnr[0].number_of_nodes() > len(possible_sn_nodes):
+        if vnr[0].number_of_nodes() > len(rest_sn_nodes):
             request_queue.append(vnr[0])
             continue
 
@@ -244,7 +245,6 @@ GetRevenue(vnr_graph_list)
 
 # Greedy Node Mapping
 successful_node_mapping = GreedyNodeMapping(sn, vnr_graph_list, node_mapping_list, request_queue)
-#successful_node_mapping_d = GreedyNodeMapping(sn_d, vnr_graph_delay_list, node_mapping_list_d, request_queue_d)
 
 # k-Shortest Path Link Mapping: no delay
 unsplittable_vnr = []
@@ -276,22 +276,57 @@ for index, vnr in enumerate(vnr_graph_nodelay_list):
         accepted_count += 1
 '''
 
+vnr_graph_list.sort(key=lambda x:x[0].graph['id'], reverse=True)
+
 vnr_no_delay = vnr_graph_list[0:][::2]
 vnr_delay = vnr_graph_list[1:][::2]
+
+for i in vnr_graph_list:
+    print("VNR id")
+    print(i[0].graph['id'])
 
 for index, vnr in enumerate(vnr_no_delay):
     # for vnd in vnr_graph_delay_list:
     vnd = vnr_delay[index]
+
+    vnr_node_mapping_status = vnr[0].graph['node_mapping_status']
+    vnr_edge_mapping_status = vnr[0].graph['edge_mapping_status']
+
+    print("index")
+    print(index)
+
+    print("vnr node mapping status")
+    print(vnr_node_mapping_status)
+
+    print("vnr edge mapping status")
+    print(vnr_edge_mapping_status)
+
+    print("vnr graph ID")
+    print(vnr[0].graph['id'])
+
+    print("vnd node mapping status")
+    print(vnd[0].graph['node_mapping_status'])
+
+    print("vnd edge mapping status")
+    print(vnd[0].graph['edge_mapping_status'])
+
+    print("vnd graph ID")
+    print(vnd[0].graph['id'])
+
+    '''
+    if index == 3:
+        pdb.set_trace()
+    '''
+    message = ''
+
     if vnr[0].graph['node_mapping_status'] == 1 and vnr[0].graph['edge_mapping_status'] == 1:
-        results.append((vnr[0].graph['id'], "Accepted"))
+        results.append((vnr[0].graph['id'], "Accepted VNR"))
         accepted_count += 1
     elif vnd[0].graph['node_mapping_status'] == 1 and vnd[0].graph['edge_mapping_status'] == 1:
-        results.append((vnd[0].graph['id'], "Accepted"))
-        out.write("Result " + str(vnd[0].graph['id']) + ": Accepted\n")
+        results.append((vnr[0].graph['id'], "Accepted VND"))
         accepted_count += 1
     else:
         results.append((vnr[0].graph['id'], "Rejected"))
-        out.write("Result " + str(vnr[0].graph['id']) + ": Rejected\n")
 
 for item in sorted(results, key=lambda x:x[0]):
     output_file.write("Result " + str(item[0]) + ": " + item[1] + "\n")

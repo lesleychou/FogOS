@@ -61,8 +61,8 @@ def GetAvailableNodes(sn, maximum_cpu, vnr_list):
         sn_nodes_i = list(set(temp_i) & set(possible_sn_nodes))
         # you're just appending this blindly, but you want it in a different array
         rest_sn_nodes.append(sn_nodes_i)
-    #print("### rest intersection ###")
-    #print(rest_sn_nodes)
+    print("### rest intersection ###")
+    print(rest_sn_nodes)
     return rest_sn_nodes
 
 

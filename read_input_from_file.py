@@ -33,7 +33,6 @@ def get_sn_info():
 
 def get_vnr_info():
   cvn, cvl = [], []
-  cvn_delay, cvl_delay = [], []
   read_data = file_vnr.read()
 
   for vnr in read_data.split("\n\n")[:-1]:
@@ -57,14 +56,14 @@ def get_vnr_info():
     for i in range(node_count + 9, len(vnr_lines)):
       bw_del.append(split_to_int(vnr_lines[i]))
 
-    cvn_delay.append([cpu_del, maxhop_del, cid_del])
-    cvl_delay.append(bw_del)
+    cvn.append([cpu_del, maxhop_del, cid_del])
+    cvl.append(bw_del)
 
-  return cvn, cvl, cvn_delay, cvl_delay
+  return cvn, cvl
 
 def get_all_input():
   asn, asl = get_sn_info()
-  cvn, cvl, cvn_delay, cvl_delay = get_vnr_info()
+  cvn, cvl = get_vnr_info()
   return asn, asl, cvn, cvl
 
 def get_dummy_asn_asl():
@@ -131,25 +130,47 @@ def get_dummy_input_with_delay():
   asl, asn = get_dummy_asn_asl()  
 
   cvn = [
-    [                 # VNR 1 Data: (WITHOUT delay)
-      [10, 11, 8],    #   CPU
-      [2, 1, 3],      #   Maxhop
-      [2, 1, 3]       #   CID
+    [                           # VNR 1 Data: (WITHOUT delay) - ODD
+      [10, 11, 8],              #   CPU
+      [2, 1, 3],                #   Maxhop
+      [2, 1, 3]                 #   CID
+    ], [                        # VNR 1 Data: (WITH delay) - EVEN
+      [10, 11, 8, 0, 0, 0],     #   CPU
+      [2, 1, 3, 0, 0, 0],       #   Maxhop
+      [2, 1, 3, -1, -1, -1]     #   CID
     ], [
       [5, 4],
       [2, 1],
       [4, 5]
+    ], [
+      [5, 4, 0, 0, 0, 0],
+      [2, 1, 0, 0, 0, 0],
+      [4, 5, -1, -1, -1, -1]
     ]
   ]
 
   cvl = [
-    [              # VNR 1 Data: (WITHOUT delay)
-      [0, 6, 6],   #  BW matrix
+    [                         # VNR 1 Data: (WITHOUT delay) - ODD
+      [0, 6, 6],              #  BW matrix
       [6, 0, 0],
       [6, 0, 0]
+    ], [                      # VNR 1 Data: (WITH delay) - EVEN
+      [0, 0, 0, 3, 2, 0],     #  BW matrix
+      [0, 0, 0, 3, 0, 0],
+      [0, 0, 0, 0, 0, 2],
+      [3, 3, 0, 0, 0, 0],
+      [2, 0, 0, 0, 0, 2],
+      [0, 0, 2, 0, 2, 0]
     ], [
       [0, 10],
       [10, 0]
+    ], [
+      [0, 0, 2, 0, 0, 0],
+      [0, 0, 0, 0, 0, 2],
+      [2, 0, 0, 2, 0, 0],
+      [0, 0, 2, 0, 2, 0],
+      [0, 0, 0, 2, 0, 2],
+      [0, 2, 0, 0, 2, 0]
     ]
   ]
 
@@ -167,37 +188,7 @@ def get_dummy_input_with_delay():
   ]
   '''
 
-  cvn_delay = [
-    [                           # VNR 1 Data: (WITH delay)
-      [10, 11, 8, 0, 0, 0],     #   CPU
-      [2, 1, 3, 0, 0, 0],       #   Maxhop
-      [2, 1, 3, -1, -1, -1]     #   CID
-    ], [
-      [5, 4, 0, 0, 0, 0],
-      [2, 1, 0, 0, 0, 0],
-      [4, 5, -1, -1, -1, -1]
-    ]
-  ]
-
-  cvl_delay = [
-    [                       # VNR 1 Data: (WITH delay)
-      [0, 0, 0, 3, 2, 0],   #  BW matrix
-      [0, 0, 0, 3, 0, 0],
-      [0, 0, 0, 0, 0, 2],
-      [3, 3, 0, 0, 0, 0],
-      [2, 0, 0, 0, 0, 2],
-      [0, 0, 2, 0, 2, 0]
-    ], [
-      [0, 0, 2, 0, 0, 0],
-      [0, 0, 0, 0, 0, 2],
-      [2, 0, 0, 2, 0, 0],
-      [0, 0, 2, 0, 2, 0],
-      [0, 0, 0, 2, 0, 2],
-      [0, 2, 0, 0, 2, 0]
-    ]
-  ]
-
-  return asn, asl, cvn, cvl, cvn_delay, cvl_delay
+  return asn, asl, cvn, cvl
 
 
 
@@ -207,6 +198,6 @@ if __name__ == "__main__":
   # print(asn, asl, cvn, cvl, sep='\n')
   # asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_dummy_input_with_delay()
   # print(asn, asl, cvn, cvl, cvn_delay, cvl_delay, sep='\n')
-  asn, asl, cvn, cvl, cvn_delay, cvl_delay = get_all_input()
+  asn, asl, cvn, cvl = get_all_input()
 
 

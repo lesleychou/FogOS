@@ -36,7 +36,7 @@ def getString(char, count):
     string = string + char + ' '
   return string
 
-MAX_NODE_ID = 500
+MAX_NODE_ID = 400
 MAX_CONTENT_ID = 20
 MAX_CONTENT_ID_COUNT = 10
 MIN_CPU = 5000

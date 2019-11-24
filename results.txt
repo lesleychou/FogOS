@@ -1,51 +1,21 @@
-Result 1: Accepted
-Result 2: Accepted
-Result 3: Accepted
-Result 4: Accepted
-Result 5: Accepted
-Result 6: Accepted
-Result 7: Accepted
-Result 8: Accepted
-Result 9: Accepted
-Result 10: Accepted
-Result 11: Accepted
-Result 12: Accepted
-Result 13: Accepted
-Result 14: Rejected
-Result 15: Accepted
-Result 16: Accepted
-Result 17: Accepted
-Result 18: Accepted
-Result 19: Accepted
-Result 20: Accepted
-Result 21: Accepted
-Result 22: Accepted
-Result 23: Accepted
-Result 24: Accepted
-Result 25: Accepted
-Result 26: Accepted
-Result 27: Accepted
-Result 28: Accepted
-Result 29: Accepted
-Result 30: Rejected
-Result 31: Accepted
-Result 32: Accepted
-Result 33: Accepted
-Result 34: Accepted
-Result 35: Accepted
-Result 36: Accepted
-Result 37: Accepted
-Result 38: Accepted
-Result 39: Accepted
-Result 40: Accepted
-Result 41: Accepted
-Result 42: Accepted
-Result 43: Accepted
-Result 44: Accepted
-Result 45: Accepted
-Result 46: Accepted
-Result 47: Accepted
-Result 48: Accepted
-Result 49: Accepted
-Result 50: Accepted
-Acceptance Ratio: 96.0%
+Result 1.0: Accepted VND
+Result 2.0: Rejected
+Result 3.0: Accepted VND
+Result 4.0: Accepted VNR
+Result 5.0: Accepted VNR
+Result 6.0: Accepted VNR
+Result 7.0: Accepted VNR
+Result 8.0: Accepted VNR
+Result 9.0: Accepted VNR
+Result 10.0: Rejected
+Result 11.0: Accepted VNR
+Result 12.0: Accepted VNR
+Result 13.0: Accepted VNR
+Result 14.0: Rejected
+Result 15.0: Accepted VNR
+Result 16.0: Accepted VNR
+Result 17.0: Rejected
+Result 18.0: Accepted VNR
+Result 19.0: Rejected
+Result 20.0: Accepted VNR
+Acceptance Ratio: 75.0%
